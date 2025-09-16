@@ -15,6 +15,17 @@ struct ContentView: View {
     
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var result = ""
+    @State private var resultMessage = ""
+    
+    @State private var chance = 8
+    
+    @State private var showingFinalScore = false
+
+
+
+    
+    @State private var currentScore = 0
     
     var body: some View {
     
@@ -63,9 +74,24 @@ struct ContentView: View {
                 Spacer()
                 Spacer()
                 
-                Text("Score: ???")
-                    .foregroundStyle(.white)
-                    .font(.title.bold())
+                
+                HStack {
+                    Spacer()
+                    
+                    Text("Score: \(currentScore)")
+                        .foregroundStyle(.white)
+                        .font(.title.bold())
+                    
+                    Spacer()
+                    
+                    Text("Chance: \(chance)")
+                        .foregroundStyle(.white)
+                        .font(.title.bold())
+                    
+                    Spacer()
+                }
+                
+
                 
                 Spacer()
             }
@@ -76,7 +102,14 @@ struct ContentView: View {
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         } message: {
-            Text("Your score is ???")
+            Text("\(resultMessage)")
+            // Text("\(result) \n Your score is \(currentScore)")
+        }
+        
+        .alert("Game is done", isPresented: $showingFinalScore) {
+            Button("Restart", action: endGame)
+        } message: {
+            Text("Your result score is \(currentScore)")
         }
         
     }
@@ -86,8 +119,26 @@ struct ContentView: View {
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct"
+            result = "Correct"
+            currentScore += 1
+            resultMessage = "Your score is \(currentScore)"
+            chance -= 1
+            
+            if chance == 0 {
+                showingFinalScore = true
+            }
+            
+            
+
         } else {
             scoreTitle = "Wrong"
+            result = "\(countries[number])"
+            resultMessage = "That flag is \(result)! \n Your score is \(currentScore)"
+            chance -= 1
+            
+            if chance == 0 {
+                showingFinalScore = true
+            }
         }
 
         showingScore = true
@@ -98,7 +149,13 @@ struct ContentView: View {
         correctAnswer = Int.random(in: 0...2)
     }
     
-}
+    func endGame() {
+            chance = 8
+        currentScore = 0
+        }
+    }
+
+
 
 
 
